@@ -13,7 +13,7 @@ typedef struct{
     int dim;
 } tArgs;
 
-void * tarefa(void *arg){
+void* tarefa(void *arg){
     tArgs *args = (tArgs*) arg;
 
     for( int i=args->id; i<args->dim; i+=nthreads ){
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
     GET_TIME(inicio);
     //leitura e avaliacao dos parametros de entrada
-    if(argc<2) {
+    if(argc<3) {
         printf("Digite: %s <dimensao da matriz> <quantidade de threads>\n", argv[0]);
         return 1;
     }
@@ -49,9 +49,9 @@ int main(int argc, char* argv[]) {
     //alocacao de memoria para as estruturas de dados
     mat = (float *) malloc(sizeof(float) * dim * dim);
     if( mat == NULL ) { printf("ERRO--malloc\n"); return 2;}
-    mat2 = (float *) malloc(sizeof(float) * dim);
+    mat2 = (float *) malloc(sizeof(float) * dim * dim);
     if( mat2 == NULL ) { printf("ERRO--malloc\n"); return 2;}
-    saida = (float *) malloc(sizeof(float) * dim);
+    saida = (float *) malloc(sizeof(float) * dim * dim);
     if( saida == NULL ) { printf("ERRO--malloc\n"); return 2;}
 
     //inicializacao das estruturas de dados de entrada e saida
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     }
     GET_TIME(fim);
     delta = fim - inicio;
-    printf("Timer Sequencial: %lf\n", delta);
+    printf("Inicialização: %lf\n", delta);
 
     GET_TIME(inicio);
     //multiplicacao da matriz1 pela matriz2
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
     }
 
     //espera pelo termino das threads
-    for(int i=0; i<dim; i++){
+    for(int i=0; i<nthreads; i++){
         pthread_join(*(tid+i), NULL);
     }
     // for(i=0; i<dim; i++){
@@ -97,21 +97,22 @@ int main(int argc, char* argv[]) {
 
     GET_TIME(fim);
     delta = fim - inicio;
-    printf("Timer Paralelo: %lf\n", delta);
+    printf("Criação das Threads, Execução da Multiplicação e Término: %lf\n", delta);
 
+    GET_TIME(inicio);
     //exibicao dos resultados
-    puts("Matriz de entrada:");
-    for(int i=0; i<dim; i++){
-        for(int j=0; j<dim; j++){
-            printf("%.1f ", mat[i*dim+j]);
-        }
-        puts("");
-    }
-    puts("Matriz 2 de entrada:");
-    for(int j=0; j<dim; j++){
-        printf("%.1f ", mat2[j]);
-    }
-    puts("");
+    // puts("Matriz de entrada:");
+    // for(int i=0; i<dim; i++){
+    //     for(int j=0; j<dim; j++){
+    //         printf("%.1f ", mat[i*dim+j]);
+    //     }
+    //     puts("");
+    // }
+    // puts("Matriz 2 de entrada:");
+    // for(int j=0; j<dim; j++){
+    //     printf("%.1f ", mat2[j]);
+    // }
+    // puts("");
     puts("Matriz de saida:");
     for(int j=0; j<dim; j++){
         printf("%.1f ", saida[j]);
@@ -124,6 +125,10 @@ int main(int argc, char* argv[]) {
     free(saida);
     free(args);
     free(tid);
+
+    GET_TIME(fim);
+    delta = fim - inicio;
+    printf("Finalização do Programa: %lf\n", delta);
 
     return 0;
 }
