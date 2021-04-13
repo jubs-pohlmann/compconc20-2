@@ -29,7 +29,7 @@ void* tarefa(void *arg){
     pthread_exit(NULL);
 }
 
-//fluxo principal
+//fluxo principal 
 int main(int argc, char* argv[]) {
     int dim; //dimensao da matriz de entrada
     pthread_t *tid; //identificadores das threads no sistema
