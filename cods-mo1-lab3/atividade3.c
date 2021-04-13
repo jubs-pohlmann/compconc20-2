@@ -16,7 +16,9 @@ void * tarefa(void * arg) {
     long int id = (long int) arg; //id thread
     long long int tamBloco = nelementos/nthreads;
     long long int ini = id*tamBloco;
-    long long int fim = ini+tamBloco;
+    long long int fim;
+    if(id == nthreads-1) fim = nelementos;
+    else fim = ini+tamBloco;
     double sinal;
 
     if (ini%2 == 0) sinal = -1;
@@ -27,12 +29,12 @@ void * tarefa(void * arg) {
         *pi += sinal/(1 + 2*i);
     } 
 
-    return (void *) pi;
+   pthread_exit((void *) pi); 
 }
 
 //fluxo principal
 int main(int argc, char *argv[]) {
-    double retorno;
+    double *retorno;
     double somaSeq= 0; //soma sequencial
     double somaConc= 0; //soma concorrente
     double ini, fim; //tomada de tempo
@@ -58,6 +60,7 @@ int main(int argc, char *argv[]) {
         sinal *= -1;
         *pi += sinal/(1 + 2*i);
     } 
+    somaSeq = 4* *pi;
     GET_TIME(fim);
     printf("Tempo sequencial:  %lf\n", fim-ini);
 
@@ -83,11 +86,9 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "ERRO--pthread_create\n");
             return 3;
         }
-        //soma global
-        // double resultado = retorno;
-        // somaConc += resultado;
-        somaConc += (double *) *retorno;
+        somaConc += *retorno;
     }
+    somaConc *= 4;
     GET_TIME(fim);
     printf("Tempo concorrente:  %lf\n", fim-ini);
 
