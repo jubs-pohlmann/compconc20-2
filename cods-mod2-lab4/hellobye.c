@@ -38,7 +38,7 @@ void *A (void *t) {
   pthread_exit(NULL);
 }
 
-/* Thread B */
+/* Thread B */ 
 void *B (void *t) {
   printf("B: Comecei\n");
 
